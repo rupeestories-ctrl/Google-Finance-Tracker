@@ -216,7 +216,7 @@
         <h2>1. Connect your Apps Script URL</h2>
         <p class="muted">Deploy the backend code shown below as a Google Apps Script web app, then paste the web app URL here.</p>
         <label for="apiUrl">Google Apps Script Web App URL</label>
-        <input id="apiUrl" placeholder="https://script.google.com/macros/s/AKfycbx-cO7B0IOmChEeZKL7RYxbNOL-eWkl99DSpSBrGryHPCZ3tXQU9SRtOHGci3IrSiJd/exec" />
+        <input id="apiUrl" value="" placeholder="Paste your /exec URL here" />
 
         <h2 style="margin-top:18px;">2. Paste ticker list</h2>
         <p class="muted">One ticker per line. Use exchange prefixes when possible, like <code>NASDAQ:NVDA</code> or <code>NYSE:LLY</code>.</p>
@@ -227,7 +227,7 @@ NYSE:LLY
 NASDAQ:AVGO"></textarea>
 
         <div class="button-row">
-          <button onclick="runLiveScreener()">Run Live Screener</button>
+          <button id="runButton" onclick="runLiveScreener()">Run Live Screener</button>
           <button class="secondary" onclick="loadSampleTickers()">Load Sample Tickers</button>
           <button class="secondary" onclick="clearAll()">Clear</button>
         </div>
@@ -497,7 +497,7 @@ function histFormula_(row, sy, sm, sd, ey, em, ed, mode) {
       for (let i = 0; i < tickers.length; i += batchSize) batches.push(tickers.slice(i, i + batchSize));
 
       setStatus(`Fetching live GOOGLEFINANCE data for ${tickers.length} tickers in ${batches.length} batch(es). This can take a bit because Google Sheets formulas need time to calculate.`, "");
-      document.querySelector("button").disabled = true;
+      document.getElementById("runButton").disabled = true;
 
       Promise.all(batches.map(batch => jsonpFetch(apiUrl, { tickers: batch.join(",") })))
         .then(payloads => {
@@ -511,7 +511,7 @@ function histFormula_(row, sy, sm, sd, ey, em, ed, mode) {
         })
         .catch(err => setStatus("Could not fetch data. Check the Apps Script URL, deployment access, and ticker format. Error: " + err.message, "danger"))
         .finally(() => {
-          document.querySelector("button").disabled = false;
+          document.getElementById("runButton").disabled = false;
         });
     }
 
@@ -796,6 +796,7 @@ function histFormula_(row, sy, sm, sd, ey, em, ed, mode) {
     }
 
     function rawNum(v) { return Number.isFinite(v) ? v : ""; }
+
     function csvCell(value) {
       const s = String(value ?? "");
       return /[",
