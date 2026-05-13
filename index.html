@@ -216,7 +216,7 @@
         <h2>1. Connect your Apps Script URL</h2>
         <p class="muted">Deploy the backend code shown below as a Google Apps Script web app, then paste the web app URL here.</p>
         <label for="apiUrl">Google Apps Script Web App URL</label>
-        <input id="apiUrl" value="" placeholder="Paste your /exec URL here" />
+        <input id="apiUrl" value="https://script.google.com/macros/s/AKfycbx-cO7B0IOmChEeZKL7RYxbNOL-eWkl99DSpSBrGryHPCZ3tXQU9SRtOHGci3IrSiJd/exec" />
 
         <h2 style="margin-top:18px;">2. Paste ticker list</h2>
         <p class="muted">One ticker per line. Use exchange prefixes when possible, like <code>NASDAQ:NVDA</code> or <code>NYSE:LLY</code>.</p>
@@ -477,15 +477,13 @@ function histFormula_(row, sy, sm, sd, ey, em, ed, mode) {
         "NYSE:ORCL",
         "NASDAQ:NFLX",
         "NASDAQ:META"
-      ].join("
-");
+      ].join("\n");
     }
 
     function runLiveScreener() {
       const apiUrl = document.getElementById("apiUrl").value.trim();
       const tickers = document.getElementById("tickerInput").value
-        .split(/
-|,|;/)
+        .split(/\n|,|;/)
         .map(t => t.trim().toUpperCase())
         .filter(Boolean);
 
@@ -782,8 +780,7 @@ function histFormula_(row, sy, sm, sd, ey, em, ed, mode) {
         idx + 1, r.ticker, r.name, rawNum(r.price), rawNum(r.marketCap), rawNum(r.volume), rawNum(r.dollarVolume), rawNum(r.ytdReturn), rawNum(r.oneYearReturn), rawNum(r.cagrs[3]), rawNum(r.cagrs[5]), rawNum(r.cagrs[7]), rawNum(r.cagrs[8]), rawNum(r.cagrs[9]), rawNum(r.cagrs[10]), ...years.map(y => rawNum(r.yearlyReturns[y])), r.positiveYears, rawNum(r.consistencyScore), rawNum(r.score), r.pass ? "PASS" : "FAIL", r.reason
       ]));
 
-      const csv = out.map(row => row.map(csvCell).join(",")).join("
-");
+      const csv = out.map(row => row.map(csvCell).join(",")).join("\n");
       const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
@@ -799,8 +796,7 @@ function histFormula_(row, sy, sm, sd, ey, em, ed, mode) {
 
     function csvCell(value) {
       const s = String(value ?? "");
-      return /[",
-]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
+      return /[",\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
     }
   </script>
 </body>
